@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-13 12:00",
+  "updated": "2026-03-13 12:30",
   "machines": [
     {
       "dai": 178,
@@ -107,7 +107,7 @@
         "reg": 0,
         "gosei": 72.0
       },
-      "current_diff": 0,
+      "current_diff": -186,
       "setting6": {
         "score": 0,
         "label": "⚪ 低設定の可能性",
@@ -131,7 +131,7 @@
         "reg": 0,
         "gosei": 204.0
       },
-      "current_diff": 0,
+      "current_diff": -268,
       "setting6": {
         "score": 0,
         "label": "⚪ 低設定の可能性",
@@ -292,23 +292,25 @@
     {
       "dai": 190,
       "error": false,
-      "history_count": 0,
+      "history_count": 4,
       "counts": {
-        "bonus": 0,
-        "big": 0,
-        "reg": 0,
-        "gosei": 229.5
+        "bonus": 4,
+        "big": 3,
+        "reg": 1,
+        "gosei": 142.5
       },
-      "current_diff": -485,
+      "current_diff": 227,
       "setting6": {
-        "score": 0,
+        "score": 1,
         "label": "⚪ 低設定の可能性",
-        "reasons": []
+        "reasons": [
+          "250G以降当選後の平均連チャン3.0回"
+        ]
       },
       "hyena": {
         "target": false,
         "reasons": [
-          "データなし"
+          "現時点では狙い目なし"
         ]
       },
       "block": "B"
