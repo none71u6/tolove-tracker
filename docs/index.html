@@ -3,158 +3,3053 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ToLOVEる 設定6 & ハイエナチェッカー</title>
+<title>スパークルV 全台チェッカー</title>
 <script>
 (function() {
   var PASS = "7144";
-  var key = "tlv_auth";
+  var key = "sparkle_auth";
   if (sessionStorage.getItem(key) !== "ok") {
-    var input = prompt("パスワードを入力してください");
-    if (input !== PASS) {
-      document.documentElement.innerHTML = "<body style='background:#000;color:#fff;font-family:sans-serif;padding:40px;text-align:center'><h2>認証失敗</h2><p>ページを再読み込みして再試行してください</p></body>";
-      throw new Error("auth failed");
-    }
-    sessionStorage.setItem(key, "ok");
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("auth-screen").style.display = "flex";
+      document.getElementById("main-content").style.display = "none";
+      document.getElementById("auth-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (document.getElementById("auth-input").value === PASS) {
+          sessionStorage.setItem(key, "ok");
+          document.getElementById("auth-screen").style.display = "none";
+          document.getElementById("main-content").style.display = "block";
+        } else {
+          document.getElementById("auth-error").textContent = "パスワードが違います";
+        }
+      });
+    });
   }
 })();
+
+function showTab(tab) {
+  document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  document.getElementById("tab-" + tab).style.display = "block";
+  document.getElementById("btn-" + tab).classList.add("active");
+}
 </script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
-  background: #1a1a2e;
-  color: #eee;
-  padding: 12px;
-  font-size: 14px;
+/* ===== リセット・ベース ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+  background:#0d0d1a;
+  color:#e8e6f0;
+  font-size:14px;
+  padding-bottom:24px;
 }
-h1 { font-size: 16px; color: #e94560; margin-bottom: 4px; }
-.updated { font-size: 11px; color: #888; margin-bottom: 12px; }
-.summary {
-  background: #16213e;
-  border: 1px solid #e94560;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 16px;
-}
-.summary h2 { font-size: 14px; color: #e94560; margin-bottom: 8px; }
-.summary ul { padding-left: 16px; }
-.summary li { margin-bottom: 4px; font-size: 13px; }
 
-.block-title {
-  font-size: 15px;
-  font-weight: bold;
-  color: #0f3460;
-  background: #e94560;
-  padding: 6px 12px;
-  border-radius: 8px;
-  margin: 16px 0 8px;
+/* ===== 認証画面 ===== */
+#auth-screen{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#0d0d1a;justify-content:center;align-items:center;z-index:9999;
 }
-.card {
-  background: #16213e;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-left: 4px solid #444;
+#auth-box{
+  background:#16152b;border:1px solid #7c4dff;border-radius:14px;
+  padding:32px 24px;text-align:center;width:280px;
 }
-.card.block-a { border-left-color: #e94560; }
-.card.block-b { border-left-color: #0f3460; }
-.card.error { opacity: 0.5; }
+#auth-box h2{color:#b39ddb;margin-bottom:16px;font-size:15px;letter-spacing:0.05em}
+#auth-input{
+  width:100%;padding:10px;border-radius:8px;border:1px solid #7c4dff;
+  background:#0d0d1a;color:#eee;font-size:16px;margin-bottom:12px;text-align:center;
+}
+#auth-btn{
+  width:100%;padding:10px;border-radius:8px;border:none;
+  background:#7c4dff;color:#fff;font-size:15px;cursor:pointer;
+}
+#auth-error{color:#e74c3c;font-size:12px;margin-top:8px}
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
+/* ===== ヘッダー ===== */
+.header{
+  background:linear-gradient(135deg,#1a0938 0%,#0d1a38 100%);
+  padding:14px 12px 0;
+  border-bottom:1px solid #2a2a4a;
 }
-.dai-no { font-size: 18px; font-weight: bold; color: #fff; }
-.block-tag {
-  font-size: 11px;
-  background: #333;
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: #aaa;
-}
-.badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: bold;
-}
-.badge.hyena { background: #27ae60; color: #fff; }
-.badge.s6 { background: #c0392b; color: #fff; }
+.header h1{font-size:15px;color:#b39ddb;letter-spacing:0.08em;margin-bottom:2px}
+.updated{font-size:11px;color:#666;margin-bottom:10px}
 
-.diff {
-  font-size: 20px;
-  font-weight: bold;
-  margin: 4px 0;
+/* ===== タブ ===== */
+.tabs{display:flex;gap:4px;padding-bottom:0}
+.tab-btn{
+  flex:1;padding:8px 4px;border:none;border-radius:8px 8px 0 0;
+  background:#16152b;color:#888;font-size:12px;cursor:pointer;
+  border-top:2px solid transparent;transition:all .2s;
 }
-.diff.plus { color: #2ecc71; }
-.diff.minus { color: #e74c3c; }
+.tab-btn.active{background:#0d0d1a;color:#b39ddb;border-top-color:#7c4dff;font-weight:bold}
 
-.bonus-info { font-size: 11px; color: #888; margin-bottom: 8px; }
+/* ===== コンテンツエリア ===== */
+.tab-content{display:none;padding:12px}
 
-.section { margin-top: 10px; }
-.section-title {
-  font-size: 12px;
-  color: #aaa;
-  font-weight: bold;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* ===== サマリーパネル ===== */
+.kpi-row{display:flex;gap:8px;margin-bottom:12px}
+.kpi{
+  flex:1;background:#16152b;border-radius:10px;padding:10px 8px;text-align:center;
+  border:1px solid #2a2a4a;
 }
-.score-bar-wrap {
-  background: #333;
-  border-radius: 4px;
-  height: 8px;
-  margin: 4px 0;
-  overflow: hidden;
-}
-.score-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-.score-num { font-size: 11px; color: #888; margin-bottom: 4px; }
-.reasons {
-  padding-left: 16px;
-  font-size: 12px;
-  color: #ccc;
-}
-.reasons li { margin-bottom: 2px; }
+.kpi-num{font-size:22px;font-weight:bold;color:#b39ddb}
+.kpi-num.plus{color:#2ecc71}
+.kpi-num.accent{color:#f39c12}
+.kpi-label{font-size:10px;color:#666;margin-top:2px}
 
-.reload-btn {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background: #e94560;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 16px;
-  text-align: center;
-  text-decoration: none;
+.hot-box{
+  background:#1a0f2e;border:1px solid #7c4dff;border-radius:10px;
+  padding:12px;margin-bottom:14px;
 }
+.hot-box h3{font-size:13px;color:#b39ddb;margin-bottom:8px}
+.hot-box ul{padding-left:16px}
+.hot-box li{font-size:13px;margin-bottom:4px;color:#ddd}
+
+/* ===== 分析テーブル ===== */
+.section-card{
+  background:#16152b;border-radius:10px;
+  border:1px solid #2a2a4a;margin-bottom:12px;overflow:hidden;
+}
+.section-card h3{
+  font-size:13px;color:#b39ddb;padding:10px 12px 8px;
+  border-bottom:1px solid #2a2a4a;letter-spacing:0.05em;
+}
+table{width:100%;border-collapse:collapse}
+td{padding:7px 10px;vertical-align:middle;border-bottom:1px solid #1e1e36;font-size:12px}
+tr:last-child td{border-bottom:none}
+.hot-row td:first-child{color:#f39c12}
+.isl-name{font-weight:bold;max-width:110px;word-break:break-all}
+.ending-no{font-weight:bold;width:60px}
+.dai-list{font-size:10px;color:#888;max-width:100px;word-break:break-all}
+
+.bar-wrap{
+  position:relative;background:#1e1e36;border-radius:4px;
+  height:18px;min-width:80px;overflow:hidden;
+}
+.bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.bar-label{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;font-weight:bold;text-shadow:0 0 3px #000;
+}
+
+.plus{color:#2ecc71}
+.minus{color:#e74c3c}
+
+/* ===== 全台一覧 ===== */
+.mini-grid{display:flex;flex-direction:column;gap:6px}
+.mini-card{
+  background:#16152b;border-radius:8px;padding:8px 10px;
+  border-left:3px solid #444;
+}
+.mini-card.plus{border-left-color:#2ecc71}
+.mini-card.minus{border-left-color:#e74c3c}
+.mini-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.mini-dai{font-size:13px;font-weight:bold;color:#ddd}
+.mini-diff{font-size:15px;font-weight:bold}
+.mini-diff.plus{color:#2ecc71}
+.mini-diff.minus{color:#e74c3c}
+.mini-info{font-size:11px;color:#888}
+.mini-bonus{font-size:10px;color:#666;margin-top:1px}
+.score-badge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:bold}
+.score-badge.red{background:#c0392b;color:#fff}
+.score-badge.yellow{background:#f39c12;color:#fff}
+.score-badge.gray{background:#444;color:#aaa}
+.tag{font-size:10px;background:#2a2a4a;padding:1px 6px;border-radius:6px;color:#aaa}
+.error-note{font-size:11px;color:#e74c3c;text-align:center;padding:8px}
+
+/* ===== ToLOVEるタブ（既存スタイル継承） ===== */
+.block-title{
+  font-size:14px;font-weight:bold;color:#0d0d1a;
+  background:#7c4dff;padding:6px 12px;border-radius:8px;margin:12px 0 8px;
+}
+.card{
+  background:#16152b;border-radius:10px;padding:12px;
+  margin-bottom:10px;border-left:4px solid #444;
+}
+.card.block-a{border-left-color:#7c4dff}
+.card.block-b{border-left-color:#4d79ff}
+.card.error{opacity:0.5}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.dai-no{font-size:18px;font-weight:bold;color:#fff}
+.block-tag{font-size:11px;background:#222;padding:2px 6px;border-radius:4px;color:#888}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:bold}
+.badge.hyena{background:#27ae60;color:#fff}
+.badge.s6{background:#7c4dff;color:#fff}
+.diff{font-size:20px;font-weight:bold;margin:4px 0}
+.bonus-info{font-size:11px;color:#888;margin-bottom:8px}
+.section{margin-top:10px}
+.section-title{font-size:12px;color:#888;font-weight:bold;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.score-bar-wrap{background:#1e1e36;border-radius:4px;height:8px;margin:4px 0;overflow:hidden}
+.score-bar{height:100%;border-radius:4px}
+.score-num{font-size:11px;color:#888;margin-bottom:4px}
+.reasons{padding-left:16px;font-size:12px;color:#bbb}
+.reasons li{margin-bottom:2px}
+
+.reload-btn{
+  display:block;width:100%;padding:12px;background:#7c4dff;color:#fff;
+  border:none;border-radius:10px;font-size:15px;font-weight:bold;
+  cursor:pointer;margin-top:16px;text-align:center;text-decoration:none;
+}
+.score-badge.vacant{background:#444;color:#aaa}
+.vacant-card{opacity:0.55}
+.badge.vacant-b{background:#444;color:#aaa}
+.yuri-row{font-size:12px;color:#bbb;margin-bottom:4px}
+.wave-list .wave-g{font-size:11px;color:#888;min-width:38px;display:inline-block}
 </style>
 </head>
 <body>
-<h1>🎰 ToLOVEる チェッカー</h1>
-<div class="updated">最終更新: 2026-03-13 14:39（約30分遅れ）</div>
 
-<div class="summary">
-  <h2>📋 注目台まとめ</h2>
-  <ul><li>現時点で設定6有力台なし</li><li>現時点でハイエナ狙い目なし</li></ul>
+<div id="auth-screen">
+  <div id="auth-box">
+    <h2>🎰 スパークルV 全台チェッカー</h2>
+    <form id="auth-form" autocomplete="on">
+      <input type="password" id="auth-input" name="password" placeholder="パスワード" autocomplete="current-password">
+      <button type="submit" id="auth-btn">ログイン</button>
+      <div id="auth-error"></div>
+    </form>
+  </div>
 </div>
 
-<div class="block-title">📍 ブロックA（178〜185番）</div>
+<div id="main-content">
+<div class="header">
+  <h1>🎰 スパークルV 全台チェッカー</h1>
+  <div class="updated">最終更新: 2026-03-14 04:08（約30分遅れ）</div>
+  <div class="tabs">
+    <button class="tab-btn active" id="btn-summary" onclick="showTab('summary')">📊 サマリー</button>
+    <button class="tab-btn" id="btn-all" onclick="showTab('all')">📋 全台一覧</button>
+    <button class="tab-btn" id="btn-tolove" onclick="showTab('tolove')">💜 ToLOVEる</button>
+    <button class="tab-btn" id="btn-ghoul" onclick="showTab('ghoul')">🩸 東京喰種</button>
+  </div>
+</div>
 
+<!-- ===== タブ1: サマリー ===== -->
+<div class="tab-content" id="tab-summary" style="display:block">
 
-<div class="block-title">📍 ブロックB（186〜192番）</div>
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-num plus">50</div>
+      <div class="kpi-label">プラス台数</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-num">203</div>
+      <div class="kpi-label">取得台数</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-num accent">-88,436</div>
+      <div class="kpi-label">合計差枚</div>
+    </div>
+  </div>
 
+  <div class="hot-box">
+    <h3>🎯 今日の狙い目</h3>
+    <ul><li>🔴 <b>台87 東京喰種A</b>　+699枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台99 東京喰種B</b>　+2,067枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台195 戦国恋姫</b>　+3,866枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台199 戦国恋姫</b>　+1,810枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台203 戦国恋姫</b>　+1,707枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台205 戦国恋姫</b>　+668枚　<span class="tag">🔑くろにくる 超優遇</span></li><li>🔴 <b>台180 ToLOVEる</b>　+3,362枚　<span class="tag">🔑くろにくる 優遇</span></li><li>🔴 <b>台182 ToLOVEる</b>　+1,039枚　<span class="tag">🔑くろにくる 優遇</span></li><li>🔴 <b>台1 攻殻機動隊</b>　+7,126枚　<span class="tag">やや優遇</span></li><li>🔴 <b>台2 攻殻機動隊</b>　+1,686枚　<span class="tag">やや優遇</span></li><li>🔴 <b>台180（ToLOVEる）</b>　🔴 設定6有力</li><li>🔴 <b>台183（ToLOVEる）</b>　🔴 設定6有力</li><li>🔴 <b>台184（ToLOVEる）</b>　🔴 設定6有力</li><li>🔴 <b>台185（ToLOVEる）</b>　🔴 設定6有力</li><li>🔴 <b>台190（ToLOVEる）</b>　🔴 設定6有力</li><li>🔴 <b>台85（東京喰種A）</b>　🔴 設定6有力（朝イチ挙動）</li></ul>
+  </div>
 
-<a class="reload-btn" href="javascript:location.reload()">🔄 画面を更新</a>
+  <div class="section-card">
+    <h3>🏝 島ごとの傾向</h3>
+    <table>
+      <tr style="font-size:10px;color:#666;border-bottom:1px solid #2a2a4a">
+        <td>島名</td><td>プラス率</td><td>合計差枚</td>
+      </tr>
+      
+<tr class="">
+  <td class="isl-name">右エリア</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:32%;background:#95a5a6"></div>
+  <span class="bar-label">11/34台 (32%)</span>
+</div></td>
+  <td class="minus">-11,477枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">Aタイプ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:23%;background:#95a5a6"></div>
+  <span class="bar-label">9/38台 (23%)</span>
+</div></td>
+  <td class="minus">-11,021枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">その他</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:17%;background:#95a5a6"></div>
+  <span class="bar-label">3/17台 (17%)</span>
+</div></td>
+  <td class="minus">-5,625枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">戦国乙女島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:37%;background:#95a5a6"></div>
+  <span class="bar-label">3/8台 (37%)</span>
+</div></td>
+  <td class="minus">-4,710枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ToLOVEるA</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:37%;background:#95a5a6"></div>
+  <span class="bar-label">3/8台 (37%)</span>
+</div></td>
+  <td class="minus">-5,347枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">戦国恋姫A</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:42%;background:#f39c12"></div>
+  <span class="bar-label">3/7台 (42%)</span>
+</div></td>
+  <td class="plus">+2,283枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">縦列1</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:18%;background:#95a5a6"></div>
+  <span class="bar-label">2/11台 (18%)</span>
+</div></td>
+  <td class="plus">+2,806枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">マギレコ島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">2/8台 (25%)</span>
+</div></td>
+  <td class="minus">-3,383枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">SAO島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:40%;background:#f39c12"></div>
+  <span class="bar-label">2/5台 (40%)</span>
+</div></td>
+  <td class="plus">+453枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ちゃんぷるA</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:28%;background:#95a5a6"></div>
+  <span class="bar-label">2/7台 (28%)</span>
+</div></td>
+  <td class="minus">-5,183枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">新台エリア</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">2/8台 (25%)</span>
+</div></td>
+  <td class="plus">+1,943枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">戦国恋姫B</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:40%;background:#f39c12"></div>
+  <span class="bar-label">2/5台 (40%)</span>
+</div></td>
+  <td class="minus">-587枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東京喰種A島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-3,620枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東京喰種B島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-3,166枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ちゃんぷるC</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:12%;background:#95a5a6"></div>
+  <span class="bar-label">1/8台 (12%)</span>
+</div></td>
+  <td class="minus">-5,099枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">化物語島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:12%;background:#95a5a6"></div>
+  <span class="bar-label">1/8台 (12%)</span>
+</div></td>
+  <td class="minus">-8,464枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東リベ/防振り島</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:12%;background:#95a5a6"></div>
+  <span class="bar-label">1/8台 (12%)</span>
+</div></td>
+  <td class="minus">-7,004枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ToLOVEるB</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:14%;background:#95a5a6"></div>
+  <span class="bar-label">1/7台 (14%)</span>
+</div></td>
+  <td class="minus">-3,878枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ちゃんぷるB</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/8台 (0%)</span>
+</div></td>
+  <td class="minus">-17,357枚</td>
+</tr>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>🎮 機種ごとの傾向</h3>
+    <table>
+      <tr style="font-size:10px;color:#666;border-bottom:1px solid #2a2a4a">
+        <td>機種名</td><td>プラス率</td><td>合計差枚</td>
+      </tr>
+      
+<tr class="">
+  <td class="isl-name">戦国恋姫</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:41%;background:#f39c12"></div>
+  <span class="bar-label">5/12台 (41%)</span>
+</div></td>
+  <td class="plus">+1,696枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ToLOVEる</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:26%;background:#95a5a6"></div>
+  <span class="bar-label">4/15台 (26%)</span>
+</div></td>
+  <td class="minus">-9,225枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ちゃんぷる</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:13%;background:#95a5a6"></div>
+  <span class="bar-label">3/23台 (13%)</span>
+</div></td>
+  <td class="minus">-27,639枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">戦国乙女</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:37%;background:#95a5a6"></div>
+  <span class="bar-label">3/8台 (37%)</span>
+</div></td>
+  <td class="minus">-4,710枚</td>
+</tr>
+<tr class="hot-row">
+  <td class="isl-name">🔥攻殻機動隊</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:66%;background:#2ecc71"></div>
+  <span class="bar-label">2/3台 (66%)</span>
+</div></td>
+  <td class="plus">+6,570枚</td>
+</tr>
+<tr class="hot-row">
+  <td class="isl-name">🔥ファンキー</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:100%;background:#2ecc71"></div>
+  <span class="bar-label">2/2台 (100%)</span>
+</div></td>
+  <td class="plus">+2,046枚</td>
+</tr>
+<tr class="hot-row">
+  <td class="isl-name">🔥クランキー</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:66%;background:#2ecc71"></div>
+  <span class="bar-label">2/3台 (66%)</span>
+</div></td>
+  <td class="plus">+1,193枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">マギレコ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">2/8台 (25%)</span>
+</div></td>
+  <td class="minus">-3,383枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">モンキー</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:50%;background:#f39c12"></div>
+  <span class="bar-label">2/4台 (50%)</span>
+</div></td>
+  <td class="minus">-2,273枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">カバネリ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:50%;background:#f39c12"></div>
+  <span class="bar-label">2/4台 (50%)</span>
+</div></td>
+  <td class="minus">-2,005枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">SAO</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:40%;background:#f39c12"></div>
+  <span class="bar-label">2/5台 (40%)</span>
+</div></td>
+  <td class="plus">+453枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">レヴュースタァ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:28%;background:#95a5a6"></div>
+  <span class="bar-label">2/7台 (28%)</span>
+</div></td>
+  <td class="minus">-1,893枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ニューパル</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:33%;background:#95a5a6"></div>
+  <span class="bar-label">1/3台 (33%)</span>
+</div></td>
+  <td class="plus">+1,224枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">バーサス</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:33%;background:#95a5a6"></div>
+  <span class="bar-label">1/3台 (33%)</span>
+</div></td>
+  <td class="plus">+1,902枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ディスク</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:50%;background:#f39c12"></div>
+  <span class="bar-label">1/2台 (50%)</span>
+</div></td>
+  <td class="plus">+607枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ガールズ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:12%;background:#95a5a6"></div>
+  <span class="bar-label">1/8台 (12%)</span>
+</div></td>
+  <td class="minus">-5,799枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">マイジャグ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:14%;background:#95a5a6"></div>
+  <span class="bar-label">1/7台 (14%)</span>
+</div></td>
+  <td class="minus">-5,983枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">マジハロ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-1,718枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">七つの魔剣</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:20%;background:#95a5a6"></div>
+  <span class="bar-label">1/5台 (20%)</span>
+</div></td>
+  <td class="minus">-318枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">SBJ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="plus">+420枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">鉄拳6</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-1,130枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">アイマス</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-1,665枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東京喰種A</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-3,620枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">かぐや様</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-648枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東京喰種B</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">1/4台 (25%)</span>
+</div></td>
+  <td class="minus">-3,166枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">アズレン</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:33%;background:#95a5a6"></div>
+  <span class="bar-label">1/3台 (33%)</span>
+</div></td>
+  <td class="minus">-2,283枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">うみねこ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:50%;background:#f39c12"></div>
+  <span class="bar-label">1/2台 (50%)</span>
+</div></td>
+  <td class="minus">-679枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ゴッドイーター</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:50%;background:#f39c12"></div>
+  <span class="bar-label">1/2台 (50%)</span>
+</div></td>
+  <td class="plus">+1,203枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">無職転生</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:16%;background:#95a5a6"></div>
+  <span class="bar-label">1/6台 (16%)</span>
+</div></td>
+  <td class="plus">+740枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">化物語</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:12%;background:#95a5a6"></div>
+  <span class="bar-label">1/8台 (12%)</span>
+</div></td>
+  <td class="minus">-8,464枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">東リベ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:20%;background:#95a5a6"></div>
+  <span class="bar-label">1/5台 (20%)</span>
+</div></td>
+  <td class="minus">-3,271枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">炎炎消防隊</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/3台 (0%)</span>
+</div></td>
+  <td class="minus">-2,396枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">グランベルム</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/5台 (0%)</span>
+</div></td>
+  <td class="minus">-1,368枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ナイツ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/2台 (0%)</span>
+</div></td>
+  <td class="">+0枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">新ハナビ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/3台 (0%)</span>
+</div></td>
+  <td class="minus">-802枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ハイパーラッシュ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/1台 (0%)</span>
+</div></td>
+  <td class="minus">-391枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ファミスタ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/1台 (0%)</span>
+</div></td>
+  <td class="minus">-1,347枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ネオアイム</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/3台 (0%)</span>
+</div></td>
+  <td class="minus">-3,671枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">バイオ</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/2台 (0%)</span>
+</div></td>
+  <td class="">+0枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ディスクULTRA</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/2台 (0%)</span>
+</div></td>
+  <td class="minus">-2,406枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">ハーレムエース</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/2台 (0%)</span>
+</div></td>
+  <td class="minus">-504枚</td>
+</tr>
+<tr class="">
+  <td class="isl-name">防振り</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:0%;background:#95a5a6"></div>
+  <span class="bar-label">0/3台 (0%)</span>
+</div></td>
+  <td class="minus">-3,733枚</td>
+</tr>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>🔢 末尾番号ごとの傾向</h3>
+    <table>
+      <tr style="font-size:10px;color:#666;border-bottom:1px solid #2a2a4a">
+        <td>末尾</td><td>プラス率</td><td>合計差枚</td><td>台番号</td>
+      </tr>
+      
+<tr class="">
+  <td class="ending-no">末尾0</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:40%;background:#f39c12"></div>
+  <span class="bar-label">8/20台 (40%)</span>
+</div></td>
+  <td class="minus">-1,636枚</td>
+  <td class="dai-list">10, 20, 30, 40, 50, 60, 70, 80</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾1</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:14%;background:#95a5a6"></div>
+  <span class="bar-label">3/21台 (14%)</span>
+</div></td>
+  <td class="minus">-9,853枚</td>
+  <td class="dai-list">1, 11, 21, 31, 41, 51, 61, 71</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾2</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">5/20台 (25%)</span>
+</div></td>
+  <td class="minus">-16,401枚</td>
+  <td class="dai-list">2, 12, 22, 32, 42, 52, 62, 72</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾3</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:19%;background:#95a5a6"></div>
+  <span class="bar-label">4/21台 (19%)</span>
+</div></td>
+  <td class="minus">-12,115枚</td>
+  <td class="dai-list">3, 13, 23, 33, 43, 53, 63, 73</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾4</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:28%;background:#95a5a6"></div>
+  <span class="bar-label">6/21台 (28%)</span>
+</div></td>
+  <td class="minus">-4,032枚</td>
+  <td class="dai-list">4, 14, 24, 34, 44, 54, 64, 74</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾5</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:19%;background:#95a5a6"></div>
+  <span class="bar-label">4/21台 (19%)</span>
+</div></td>
+  <td class="minus">-12,104枚</td>
+  <td class="dai-list">5, 15, 25, 35, 45, 55, 65, 75</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾6</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:15%;background:#95a5a6"></div>
+  <span class="bar-label">3/20台 (15%)</span>
+</div></td>
+  <td class="minus">-12,247枚</td>
+  <td class="dai-list">6, 16, 26, 36, 46, 56, 66, 76</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾7</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:15%;background:#95a5a6"></div>
+  <span class="bar-label">3/20台 (15%)</span>
+</div></td>
+  <td class="minus">-10,528枚</td>
+  <td class="dai-list">7, 17, 27, 37, 47, 57, 67, 77</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾8</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:25%;background:#95a5a6"></div>
+  <span class="bar-label">5/20台 (25%)</span>
+</div></td>
+  <td class="minus">-7,723枚</td>
+  <td class="dai-list">8, 18, 28, 38, 48, 58, 68, 78</td>
+</tr>
+<tr class="">
+  <td class="ending-no">末尾9</td>
+  <td>
+<div class="bar-wrap">
+  <div class="bar-fill" style="width:47%;background:#f39c12"></div>
+  <span class="bar-label">9/19台 (47%)</span>
+</div></td>
+  <td class="minus">-1,797枚</td>
+  <td class="dai-list">9, 19, 29, 49, 59, 69, 79, 89</td>
+</tr>
+    </table>
+  </div>
+
+  <a class="reload-btn" href="javascript:location.reload()">🔄 更新</a>
+</div>
+
+<!-- ===== タブ2: 全台一覧 ===== -->
+<div class="tab-content" id="tab-all">
+  <div style="font-size:11px;color:#888;margin-bottom:10px">差枚が多い順に表示</div>
+  <div class="mini-grid">
+    
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台74</span>
+    <span class="mini-diff plus">+7,290枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">SBJ　右エリア</div>
+  <div class="mini-bonus">B93/R3</div>
+</div>
+<div class="mini-card plus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台1</span>
+    <span class="mini-diff plus">+7,126枚</span>
+    <span class="score-badge red">🔴 高</span><span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">攻殻機動隊　縦列1</div>
+  <div class="mini-bonus">B29/R7</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台136</span>
+    <span class="mini-diff plus">+6,314枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B115/R44</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台160</span>
+    <span class="mini-diff plus">+6,026枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B58/R13</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台195</span>
+    <span class="mini-diff plus">+3,866枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B35/R16</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台94</span>
+    <span class="mini-diff plus">+3,856枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">かぐや様　右エリア</div>
+  <div class="mini-bonus">B15/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台82</span>
+    <span class="mini-diff plus">+3,733枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">アイマス　右エリア</div>
+  <div class="mini-bonus">B70/R19</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台180</span>
+    <span class="mini-diff plus">+3,362枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B18/R8</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台109</span>
+    <span class="mini-diff plus">+2,797枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B16/R28</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台119</span>
+    <span class="mini-diff plus">+2,797枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B55/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台19</span>
+    <span class="mini-diff plus">+2,416枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">バーサス　Aタイプ</div>
+  <div class="mini-bonus">B17/R8</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台174</span>
+    <span class="mini-diff plus">+2,272枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">東リベ　東リベ/防振り島</div>
+  <div class="mini-bonus">B30/R7</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台14</span>
+    <span class="mini-diff plus">+2,190枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ニューパル　Aタイプ</div>
+  <div class="mini-bonus">B23/R15</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台90</span>
+    <span class="mini-diff plus">+2,108枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">カバネリ　右エリア</div>
+  <div class="mini-bonus">B53/R16</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台99</span>
+    <span class="mini-diff plus">+2,067枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">東京喰種B　東京喰種B島</div>
+  <div class="mini-bonus">B14/R6</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台199</span>
+    <span class="mini-diff plus">+1,810枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B18/R10</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台107</span>
+    <span class="mini-diff plus">+1,779枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">SAO　SAO島</div>
+  <div class="mini-bonus">B16/R3</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台60</span>
+    <span class="mini-diff plus">+1,769枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B10/R23</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台203</span>
+    <span class="mini-diff plus">+1,707枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫B</div>
+  <div class="mini-bonus">B30/R16</div>
+</div>
+<div class="mini-card plus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台2</span>
+    <span class="mini-diff plus">+1,686枚</span>
+    <span class="score-badge red">🔴 高</span><span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">攻殻機動隊　縦列1</div>
+  <div class="mini-bonus">B17/R4</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台78</span>
+    <span class="mini-diff plus">+1,656枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">鉄拳6　右エリア</div>
+  <div class="mini-bonus">B25/R21</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台66</span>
+    <span class="mini-diff plus">+1,501枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B11/R16</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台154</span>
+    <span class="mini-diff plus">+1,429枚</span>
+    
+  </div>
+  <div class="mini-info">ゴッドイーター　新台エリア</div>
+  <div class="mini-bonus">B13/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台13</span>
+    <span class="mini-diff plus">+1,213枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ファンキー　Aタイプ</div>
+  <div class="mini-bonus">B8/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台153</span>
+    <span class="mini-diff plus">+1,213枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B7/R7</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台182</span>
+    <span class="mini-diff plus">+1,039枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B7/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台40</span>
+    <span class="mini-diff plus">+967枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B26/R16</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台35</span>
+    <span class="mini-diff plus">+956枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B16/R13</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台141</span>
+    <span class="mini-diff plus">+915枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">うみねこ　その他</div>
+  <div class="mini-bonus">B24/R17</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台88</span>
+    <span class="mini-diff plus">+843枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">カバネリ　右エリア</div>
+  <div class="mini-bonus">B60/R23</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台108</span>
+    <span class="mini-diff plus">+843枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B4/R6</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台12</span>
+    <span class="mini-diff plus">+833枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ファンキー　Aタイプ</div>
+  <div class="mini-bonus">B20/R13</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台146</span>
+    <span class="mini-diff plus">+833枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B3/R3</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台168</span>
+    <span class="mini-diff plus">+781枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B8/R3</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台30</span>
+    <span class="mini-diff plus">+771枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">クランキー　Aタイプ</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台87</span>
+    <span class="mini-diff plus">+699枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">東京喰種A　東京喰種A島</div>
+  <div class="mini-bonus">B6/R3</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台51</span>
+    <span class="mini-diff plus">+668枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">マジハロ　その他</div>
+  <div class="mini-bonus">B49/R54</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台205</span>
+    <span class="mini-diff plus">+668枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫B</div>
+  <div class="mini-bonus">B6/R8</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台27</span>
+    <span class="mini-diff plus">+607枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ディスク　Aタイプ</div>
+  <div class="mini-bonus">B2/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台68</span>
+    <span class="mini-diff plus">+596枚</span>
+    <span class="score-badge red">🔴 高</span>
+  </div>
+  <div class="mini-info">モンキー　右エリア</div>
+  <div class="mini-bonus">B9/R4</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台29</span>
+    <span class="mini-diff plus">+422枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">クランキー　Aタイプ</div>
+  <div class="mini-bonus">B16/R5</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台115</span>
+    <span class="mini-diff plus">+370枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B7/R4</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台69</span>
+    <span class="mini-diff plus">+350枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">モンキー　右エリア</div>
+  <div class="mini-bonus">B5/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台192</span>
+    <span class="mini-diff plus">+339枚</span>
+    <span class="score-badge yellow">🟡 中</span>
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるB</div>
+  <div class="mini-bonus">B6/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台150</span>
+    <span class="mini-diff plus">+237枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B4/R3</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台193</span>
+    <span class="mini-diff plus">+144枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B5/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台104</span>
+    <span class="mini-diff plus">+103枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">SAO　SAO島</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台59</span>
+    <span class="mini-diff plus">+21枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">七つの魔剣　その他</div>
+  <div class="mini-bonus">B5/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台179</span>
+    <span class="mini-diff plus">+21枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card plus">
+  <div class="mini-top">
+    <span class="mini-dai">台100</span>
+    <span class="mini-diff plus">+10枚</span>
+    <span class="score-badge gray">⚪ 低</span>
+  </div>
+  <div class="mini-info">アズレン　右エリア</div>
+  <div class="mini-bonus">B11/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台61</span>
+    <span class="mini-diff minus">+0枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B23/R23</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台98</span>
+    <span class="mini-diff minus">-10枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種B　東京喰種B島</div>
+  <div class="mini-bonus">B41/R20</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台158</span>
+    <span class="mini-diff minus">-10枚</span>
+    
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B7/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台76</span>
+    <span class="mini-diff minus">-82枚</span>
+    
+  </div>
+  <div class="mini-info">鉄拳6　右エリア</div>
+  <div class="mini-bonus">B7/R5</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台106</span>
+    <span class="mini-diff minus">-103枚</span>
+    
+  </div>
+  <div class="mini-info">SAO　SAO島</div>
+  <div class="mini-bonus">B0/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台133</span>
+    <span class="mini-diff minus">-123枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B5/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台147</span>
+    <span class="mini-diff minus">-195枚</span>
+    
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台194</span>
+    <span class="mini-diff minus">-195枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B2/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台177</span>
+    <span class="mini-diff minus">-206枚</span>
+    
+  </div>
+  <div class="mini-info">東リベ　東リベ/防振り島</div>
+  <div class="mini-bonus">B4/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台155</span>
+    <span class="mini-diff minus">-226枚</span>
+    
+  </div>
+  <div class="mini-info">ゴッドイーター　新台エリア</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台46</span>
+    <span class="mini-diff minus">-237枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B5/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台113</span>
+    <span class="mini-diff minus">-237枚</span>
+    
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台21</span>
+    <span class="mini-diff minus">-247枚</span>
+    
+  </div>
+  <div class="mini-info">バーサス　Aタイプ</div>
+  <div class="mini-bonus">B0/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台20</span>
+    <span class="mini-diff minus">-267枚</span>
+    
+  </div>
+  <div class="mini-info">バーサス　Aタイプ</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台105</span>
+    <span class="mini-diff minus">-267枚</span>
+    
+  </div>
+  <div class="mini-info">SAO　SAO島</div>
+  <div class="mini-bonus">B13/R8</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台16</span>
+    <span class="mini-diff minus">-308枚</span>
+    
+  </div>
+  <div class="mini-info">ニューパル　Aタイプ</div>
+  <div class="mini-bonus">B4/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台56</span>
+    <span class="mini-diff minus">-339枚</span>
+    
+  </div>
+  <div class="mini-info">七つの魔剣　その他</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台84</span>
+    <span class="mini-diff minus">-350枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種A　東京喰種A島</div>
+  <div class="mini-bonus">B8/R3</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台6</span>
+    <span class="mini-diff minus">-360枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">炎炎消防隊　縦列1</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台24</span>
+    <span class="mini-diff minus">-380枚</span>
+    
+  </div>
+  <div class="mini-info">新ハナビ　Aタイプ</div>
+  <div class="mini-bonus">B4/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台25</span>
+    <span class="mini-diff minus">-391枚</span>
+    
+  </div>
+  <div class="mini-info">ハイパーラッシュ　Aタイプ</div>
+  <div class="mini-bonus">B4/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台22</span>
+    <span class="mini-diff minus">-422枚</span>
+    
+  </div>
+  <div class="mini-info">新ハナビ　Aタイプ</div>
+  <div class="mini-bonus">B3/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台123</span>
+    <span class="mini-diff minus">-463枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台198</span>
+    <span class="mini-diff minus">-483枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B2/R2</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台10</span>
+    <span class="mini-diff minus">-494枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">グランベルム　縦列1</div>
+  <div class="mini-bonus">B8/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台145</span>
+    <span class="mini-diff minus">-504枚</span>
+    
+  </div>
+  <div class="mini-info">ハーレムエース　その他</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台41</span>
+    <span class="mini-diff minus">-514枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B11/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台117</span>
+    <span class="mini-diff minus">-524枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B6/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台101</span>
+    <span class="mini-diff minus">-545枚</span>
+    
+  </div>
+  <div class="mini-info">アズレン　右エリア</div>
+  <div class="mini-bonus">B29/R10</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台204</span>
+    <span class="mini-diff minus">-576枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫B</div>
+  <div class="mini-bonus">B2/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台143</span>
+    <span class="mini-diff minus">-586枚</span>
+    
+  </div>
+  <div class="mini-info">ディスクULTRA　その他</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台43</span>
+    <span class="mini-diff minus">-627枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B10/R8</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台110</span>
+    <span class="mini-diff minus">-638枚</span>
+    
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台111</span>
+    <span class="mini-diff minus">-638枚</span>
+    
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台163</span>
+    <span class="mini-diff minus">-648枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B16/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台15</span>
+    <span class="mini-diff minus">-658枚</span>
+    
+  </div>
+  <div class="mini-info">ニューパル　Aタイプ</div>
+  <div class="mini-bonus">B4/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台167</span>
+    <span class="mini-diff minus">-658枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台171</span>
+    <span class="mini-diff minus">-679枚</span>
+    
+  </div>
+  <div class="mini-info">防振り　東リベ/防振り島</div>
+  <div class="mini-bonus">B13/R8</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台186</span>
+    <span class="mini-diff minus">-710枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるB</div>
+  <div class="mini-bonus">B2/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台65</span>
+    <span class="mini-diff minus">-720枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B1/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台34</span>
+    <span class="mini-diff minus">-730枚</span>
+    
+  </div>
+  <div class="mini-info">ネオアイム　Aタイプ</div>
+  <div class="mini-bonus">B1/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台200</span>
+    <span class="mini-diff minus">-730枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫B</div>
+  <div class="mini-bonus">B0/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台188</span>
+    <span class="mini-diff minus">-751枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるB</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台50</span>
+    <span class="mini-diff minus">-761枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B9/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台44</span>
+    <span class="mini-diff minus">-771枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B7/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台49</span>
+    <span class="mini-diff minus">-781枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B2/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台83</span>
+    <span class="mini-diff minus">-812枚</span>
+    
+  </div>
+  <div class="mini-info">アイマス　右エリア</div>
+  <div class="mini-bonus">B29/R10</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台157</span>
+    <span class="mini-diff minus">-864枚</span>
+    
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B1/R3</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台9</span>
+    <span class="mini-diff minus">-874枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">グランベルム　縦列1</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台36</span>
+    <span class="mini-diff minus">-884枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B0/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台196</span>
+    <span class="mini-diff minus">-895枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B6/R8</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台5</span>
+    <span class="mini-diff minus">-915枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">炎炎消防隊　縦列1</div>
+  <div class="mini-bonus">B0/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台156</span>
+    <span class="mini-diff minus">-936枚</span>
+    
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B6/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台47</span>
+    <span class="mini-diff minus">-977枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B9/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台129</span>
+    <span class="mini-diff minus">-977枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B5/R11</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台63</span>
+    <span class="mini-diff minus">-987枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台161</span>
+    <span class="mini-diff minus">-1,039枚</span>
+    
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B3/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台103</span>
+    <span class="mini-diff minus">-1,059枚</span>
+    
+  </div>
+  <div class="mini-info">SAO　SAO島</div>
+  <div class="mini-bonus">B0/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台52</span>
+    <span class="mini-diff minus">-1,080枚</span>
+    
+  </div>
+  <div class="mini-info">マジハロ　その他</div>
+  <div class="mini-bonus">B38/R73</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台120</span>
+    <span class="mini-diff minus">-1,080枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台164</span>
+    <span class="mini-diff minus">-1,080枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B4/R2</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台4</span>
+    <span class="mini-diff minus">-1,121枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">炎炎消防隊　縦列1</div>
+  <div class="mini-bonus">B6/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台67</span>
+    <span class="mini-diff minus">-1,131枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台132</span>
+    <span class="mini-diff minus">-1,203枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B1/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台170</span>
+    <span class="mini-diff minus">-1,203枚</span>
+    
+  </div>
+  <div class="mini-info">防振り　東リベ/防振り島</div>
+  <div class="mini-bonus">B6/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台33</span>
+    <span class="mini-diff minus">-1,234枚</span>
+    
+  </div>
+  <div class="mini-info">ネオアイム　Aタイプ</div>
+  <div class="mini-bonus">B8/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台112</span>
+    <span class="mini-diff minus">-1,244枚</span>
+    
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B6/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台75</span>
+    <span class="mini-diff minus">-1,296枚</span>
+    
+  </div>
+  <div class="mini-info">SBJ　右エリア</div>
+  <div class="mini-bonus">B2/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台54</span>
+    <span class="mini-diff minus">-1,306枚</span>
+    
+  </div>
+  <div class="mini-info">マジハロ　その他</div>
+  <div class="mini-bonus">B24/R28</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台71</span>
+    <span class="mini-diff minus">-1,306枚</span>
+    
+  </div>
+  <div class="mini-info">モンキー　右エリア</div>
+  <div class="mini-bonus">B8/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台165</span>
+    <span class="mini-diff minus">-1,306枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台151</span>
+    <span class="mini-diff minus">-1,337枚</span>
+    
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B11/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台162</span>
+    <span class="mini-diff minus">-1,337枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台26</span>
+    <span class="mini-diff minus">-1,347枚</span>
+    
+  </div>
+  <div class="mini-info">ファミスタ　Aタイプ</div>
+  <div class="mini-bonus">B4/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台178</span>
+    <span class="mini-diff minus">-1,378枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B6/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台38</span>
+    <span class="mini-diff minus">-1,398枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B14/R13</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台85</span>
+    <span class="mini-diff minus">-1,398枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種A　東京喰種A島</div>
+  <div class="mini-bonus">B20/R14</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台62</span>
+    <span class="mini-diff minus">-1,460枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B5/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台137</span>
+    <span class="mini-diff minus">-1,460枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B1/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台149</span>
+    <span class="mini-diff minus">-1,481枚</span>
+    
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B11/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台48</span>
+    <span class="mini-diff minus">-1,501枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B1/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台166</span>
+    <span class="mini-diff minus">-1,522枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台175</span>
+    <span class="mini-diff minus">-1,563枚</span>
+    
+  </div>
+  <div class="mini-info">東リベ　東リベ/防振り島</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台42</span>
+    <span class="mini-diff minus">-1,573枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B8/R5</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台140</span>
+    <span class="mini-diff minus">-1,594枚</span>
+    
+  </div>
+  <div class="mini-info">うみねこ　その他</div>
+  <div class="mini-bonus">B11/R11</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台37</span>
+    <span class="mini-diff minus">-1,614枚</span>
+    
+  </div>
+  <div class="mini-info">ガールズ　Aタイプ</div>
+  <div class="mini-bonus">B4/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台185</span>
+    <span class="mini-diff minus">-1,635枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B18/R9</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台201</span>
+    <span class="mini-diff minus">-1,656枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫B</div>
+  <div class="mini-bonus">B0/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台127</span>
+    <span class="mini-diff minus">-1,676枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台32</span>
+    <span class="mini-diff minus">-1,707枚</span>
+    
+  </div>
+  <div class="mini-info">ネオアイム　Aタイプ</div>
+  <div class="mini-bonus">B4/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台92</span>
+    <span class="mini-diff minus">-1,717枚</span>
+    
+  </div>
+  <div class="mini-info">かぐや様　右エリア</div>
+  <div class="mini-bonus">B7/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台176</span>
+    <span class="mini-diff minus">-1,717枚</span>
+    
+  </div>
+  <div class="mini-info">東リベ　東リベ/防振り島</div>
+  <div class="mini-bonus">B6/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台102</span>
+    <span class="mini-diff minus">-1,748枚</span>
+    
+  </div>
+  <div class="mini-info">アズレン　右エリア</div>
+  <div class="mini-bonus">B13/R15</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台81</span>
+    <span class="mini-diff minus">-1,789枚</span>
+    
+  </div>
+  <div class="mini-info">アイマス　右エリア</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台142</span>
+    <span class="mini-diff minus">-1,820枚</span>
+    
+  </div>
+  <div class="mini-info">ディスクULTRA　その他</div>
+  <div class="mini-bonus">B3/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台181</span>
+    <span class="mini-diff minus">-1,830枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B5/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台172</span>
+    <span class="mini-diff minus">-1,851枚</span>
+    
+  </div>
+  <div class="mini-info">防振り　東リベ/防振り島</div>
+  <div class="mini-bonus">B1/R1</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台70</span>
+    <span class="mini-diff minus">-1,913枚</span>
+    
+  </div>
+  <div class="mini-info">モンキー　右エリア</div>
+  <div class="mini-bonus">B47/R22</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台148</span>
+    <span class="mini-diff minus">-1,913枚</span>
+    
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B5/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台197</span>
+    <span class="mini-diff minus">-1,964枚</span>
+    
+  </div>
+  <div class="mini-info">戦国恋姫　戦国恋姫A</div>
+  <div class="mini-bonus">B10/R9</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台121</span>
+    <span class="mini-diff minus">-2,026枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B7/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台173</span>
+    <span class="mini-diff minus">-2,057枚</span>
+    
+  </div>
+  <div class="mini-info">東リベ　東リベ/防振り島</div>
+  <div class="mini-bonus">B4/R3</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台45</span>
+    <span class="mini-diff minus">-2,067枚</span>
+    
+  </div>
+  <div class="mini-info">マイジャグ　Aタイプ</div>
+  <div class="mini-bonus">B2/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台152</span>
+    <span class="mini-diff minus">-2,067枚</span>
+    
+  </div>
+  <div class="mini-info">戦国乙女　戦国乙女島</div>
+  <div class="mini-bonus">B2/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台116</span>
+    <span class="mini-diff minus">-2,149枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B17/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台183</span>
+    <span class="mini-diff minus">-2,170枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B14/R8</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台125</span>
+    <span class="mini-diff minus">-2,231枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B3/R1</div>
+</div>
+<div class="mini-card minus  vacant-card">
+  <div class="mini-top">
+    <span class="mini-dai">台3</span>
+    <span class="mini-diff minus">-2,242枚</span>
+    <span class="score-badge vacant">💤 空き台</span>
+  </div>
+  <div class="mini-info">攻殻機動隊　縦列1</div>
+  <div class="mini-bonus">B8/R14</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台97</span>
+    <span class="mini-diff minus">-2,344枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種B　東京喰種B島</div>
+  <div class="mini-bonus">B7/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台64</span>
+    <span class="mini-diff minus">-2,355枚</span>
+    
+  </div>
+  <div class="mini-info">マギレコ　マギレコ島</div>
+  <div class="mini-bonus">B6/R5</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台122</span>
+    <span class="mini-diff minus">-2,375枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B7/R8</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台91</span>
+    <span class="mini-diff minus">-2,406枚</span>
+    
+  </div>
+  <div class="mini-info">カバネリ　右エリア</div>
+  <div class="mini-bonus">B46/R24</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台72</span>
+    <span class="mini-diff minus">-2,427枚</span>
+    
+  </div>
+  <div class="mini-info">SBJ　右エリア</div>
+  <div class="mini-bonus">B12/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台128</span>
+    <span class="mini-diff minus">-2,427枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B7/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台159</span>
+    <span class="mini-diff minus">-2,437枚</span>
+    
+  </div>
+  <div class="mini-info">無職転生　新台エリア</div>
+  <div class="mini-bonus">B7/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台89</span>
+    <span class="mini-diff minus">-2,550枚</span>
+    
+  </div>
+  <div class="mini-info">カバネリ　右エリア</div>
+  <div class="mini-bonus">B37/R18</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台131</span>
+    <span class="mini-diff minus">-2,550枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B2/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台86</span>
+    <span class="mini-diff minus">-2,571枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種A　東京喰種A島</div>
+  <div class="mini-bonus">B3/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台118</span>
+    <span class="mini-diff minus">-2,571枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるA</div>
+  <div class="mini-bonus">B19/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台130</span>
+    <span class="mini-diff minus">-2,653枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B10/R11</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台169</span>
+    <span class="mini-diff minus">-2,694枚</span>
+    
+  </div>
+  <div class="mini-info">化物語　化物語島</div>
+  <div class="mini-bonus">B7/R5</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台79</span>
+    <span class="mini-diff minus">-2,704枚</span>
+    
+  </div>
+  <div class="mini-info">鉄拳6　右エリア</div>
+  <div class="mini-bonus">B8/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台184</span>
+    <span class="mini-diff minus">-2,756枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるA</div>
+  <div class="mini-bonus">B11/R6</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台190</span>
+    <span class="mini-diff minus">-2,756枚</span>
+    
+  </div>
+  <div class="mini-info">ToLOVEる　ToLOVEるB</div>
+  <div class="mini-bonus">B42/R21</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台114</span>
+    <span class="mini-diff minus">-2,776枚</span>
+    
+  </div>
+  <div class="mini-info">レヴュースタァ　右エリア</div>
+  <div class="mini-bonus">B18/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台95</span>
+    <span class="mini-diff minus">-2,787枚</span>
+    
+  </div>
+  <div class="mini-info">かぐや様　右エリア</div>
+  <div class="mini-bonus">B27/R10</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台80</span>
+    <span class="mini-diff minus">-2,797枚</span>
+    
+  </div>
+  <div class="mini-info">アイマス　右エリア</div>
+  <div class="mini-bonus">B3/R2</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台96</span>
+    <span class="mini-diff minus">-2,879枚</span>
+    
+  </div>
+  <div class="mini-info">東京喰種B　東京喰種B島</div>
+  <div class="mini-bonus">B5/R7</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台73</span>
+    <span class="mini-diff minus">-3,147枚</span>
+    
+  </div>
+  <div class="mini-info">SBJ　右エリア</div>
+  <div class="mini-bonus">B4/R0</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台124</span>
+    <span class="mini-diff minus">-3,352枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B10/R4</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台134</span>
+    <span class="mini-diff minus">-3,424枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるC</div>
+  <div class="mini-bonus">B23/R27</div>
+</div>
+<div class="mini-card minus">
+  <div class="mini-top">
+    <span class="mini-dai">台126</span>
+    <span class="mini-diff minus">-3,856枚</span>
+    
+  </div>
+  <div class="mini-info">ちゃんぷる　ちゃんぷるB</div>
+  <div class="mini-bonus">B13/R8</div>
+</div><div class="error-note">取得失敗: 39, 202番台</div>
+  </div>
+  <a class="reload-btn" href="javascript:location.reload()">🔄 更新</a>
+</div>
+
+<!-- ===== タブ3: ToLOVEる詳細 ===== -->
+<div class="tab-content" id="tab-tolove">
+  <div class="block-title">📍 ブロックA（178〜185番）</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 178</span>
+    <span class="block-tag">ブロックA</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -1,378枚</div>
+  <div class="bonus-info">BONUS 8回 (BIG 6 / REG 2)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🟡 要注目</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:50%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 4/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が2回</li><li>250G以降当選後の平均連チャン5.0回（優遇の波）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -1378枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-1,378枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">626G</span> <span class="">+0枚</span> </li><li><span class="wave-g">556G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 179</span>
+    <span class="block-tag">ブロックA</span>
+    
+  </div>
+  <div class="diff plus">差枚: +21枚</div>
+  <div class="bonus-info">BONUS 5回 (BIG 3 / REG 2)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">⚪ 低設定の可能性</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:12%;background:#4a4a6a"></div></div>
+    <div class="score-num">スコア: 1/8</div>
+    <ul class="reasons"><li>—</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>現時点では狙い目なし</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="plus">+21枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">162G</span> <span class="">+0枚</span> </li><li><span class="wave-g">86G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 180</span>
+    <span class="block-tag">ブロックA</span>
+    
+  </div>
+  <div class="diff plus">差枚: +3,362枚</div>
+  <div class="bonus-info">BONUS 26回 (BIG 18 / REG 8)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🔴 設定6有力</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 6/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が3回（優遇パターン多数）</li><li>ジグザグあり（反転5回, 振れ幅4134枚）</li><li>250G以降当選後の平均連チャン3.0回</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>現時点では狙い目なし</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="plus">+627枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">319G</span> <span class="">+0枚</span> </li><li><span class="wave-g">35G</span> <span class="plus">+3,239枚</span> 🐟</li><li><span class="wave-g">588G</span> <span class="">+0枚</span> </li><li><span class="wave-g">185G</span> <span class="minus">-216枚</span> </li><li><span class="wave-g">279G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 181</span>
+    <span class="block-tag">ブロックA</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -1,830枚</div>
+  <div class="bonus-info">BONUS 8回 (BIG 5 / REG 3)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🟡 要注目</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:37%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3/8</div>
+    <ul class="reasons"><li>650Gゾーン/天井当選が1回</li><li>250G以降当選後の平均連チャン3.0回</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -1830枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-1,830枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">152G</span> <span class="minus">-2,416枚</span> </li><li><span class="wave-g">1034G</span> <span class="">+0枚</span> </li><li><span class="wave-g">67G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 182</span>
+    <span class="block-tag">ブロックA</span>
+    
+  </div>
+  <div class="diff plus">差枚: +1,039枚</div>
+  <div class="bonus-info">BONUS 9回 (BIG 7 / REG 2)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🟡 要注目</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:37%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が2回</li><li>250G以降当選後の平均連チャン3.5回</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>現時点では狙い目なし</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="plus">+1,039枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">377G</span> <span class="minus">-83枚</span> </li><li><span class="wave-g">286G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 183</span>
+    <span class="block-tag">ブロックA</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -2,170枚</div>
+  <div class="bonus-info">BONUS 22回 (BIG 14 / REG 8)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🔴 設定6有力</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 6/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が4回（優遇パターン多数）</li><li>250G以降当選後の平均連チャン4.0回（優遇の波）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -2170枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-2,170枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">326G</span> <span class="">+0枚</span> </li><li><span class="wave-g">69G</span> <span class="">+0枚</span> </li><li><span class="wave-g">145G</span> <span class="">+0枚</span> </li><li><span class="wave-g">212G</span> <span class="minus">-823枚</span> </li><li><span class="wave-g">546G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 184</span>
+    <span class="block-tag">ブロックA</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -2,756枚</div>
+  <div class="bonus-info">BONUS 17回 (BIG 11 / REG 6)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🔴 設定6有力</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 6/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が5回（優遇パターン多数）</li><li>650Gゾーン/天井当選が1回</li><li>ジグザグあり（反転5回, 振れ幅2961枚）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -2756枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-2,756枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">688G</span> <span class="minus">-494枚</span> </li><li><span class="wave-g">550G</span> <span class="">+0枚</span> </li><li><span class="wave-g">182G</span> <span class="minus">-1,151枚</span> </li><li><span class="wave-g">514G</span> <span class="">+0枚</span> </li><li><span class="wave-g">361G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 185</span>
+    <span class="block-tag">ブロックA</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -1,635枚</div>
+  <div class="bonus-info">BONUS 27回 (BIG 18 / REG 9)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🔴 設定6有力</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 6/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が3回（優遇パターン多数）</li><li>大きなジグザグあり（反転9回, 振れ幅2653枚）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -1635枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-1,635枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">157G</span> <span class="">+0枚</span> </li><li><span class="wave-g">129G</span> <span class="minus">-123枚</span> </li><li><span class="wave-g">311G</span> <span class="">+0枚</span> </li><li><span class="wave-g">69G</span> <span class="minus">-720枚</span> </li><li><span class="wave-g">855G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div><div class="block-title">📍 ブロックB（186〜192番）</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 186</span>
+    <span class="block-tag">ブロックB</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -710枚</div>
+  <div class="bonus-info">BONUS 3回 (BIG 2 / REG 1)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">⚪ 低設定の可能性</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:#4a4a6a"></div></div>
+    <div class="score-num">スコア: 0/8</div>
+    <ul class="reasons"><li>—</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -710枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-710枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">347G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 188</span>
+    <span class="block-tag">ブロックB</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -751枚</div>
+  <div class="bonus-info">BONUS 5回 (BIG 3 / REG 2)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">⚪ 低設定の可能性</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:#4a4a6a"></div></div>
+    <div class="score-num">スコア: 0/8</div>
+    <ul class="reasons"><li>—</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -751枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-751枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">301G</span> <span class="">+0枚</span> </li><li><span class="wave-g">141G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 190</span>
+    <span class="block-tag">ブロックB</span>
+    <span class="badge hyena">🎯 ハイエナ狙い目</span>
+  </div>
+  <div class="diff minus">差枚: -2,756枚</div>
+  <div class="bonus-info">BONUS 63回 (BIG 42 / REG 21)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🔴 設定6有力</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:100%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 9/8</div>
+    <ul class="reasons"><li>250G以降BIG当選が12回（優遇パターン多数）</li><li>650Gゾーン/天井当選が2回</li><li>大きなジグザグあり（反転16回, 振れ幅3990枚）</li><li>250G以降当選後の平均連チャン2.9回</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>✅ 有利区間差枚 -2756枚（優遇状態）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="minus">-2,756枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">687G</span> <span class="plus">+298枚</span> </li><li><span class="wave-g">356G</span> <span class="plus">+411枚</span> </li><li><span class="wave-g">366G</span> <span class="">+0枚</span> </li><li><span class="wave-g">183G</span> <span class="">+0枚</span> </li><li><span class="wave-g">194G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 192</span>
+    <span class="block-tag">ブロックB</span>
+    
+  </div>
+  <div class="diff plus">差枚: +339枚</div>
+  <div class="bonus-info">BONUS 8回 (BIG 6 / REG 2)</div>
+  <div class="section">
+    <div class="section-title">設定6候補度</div>
+    <span class="badge s6">🟡 要注目</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:37%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3/8</div>
+    <ul class="reasons"><li>250G以降当選後の平均連チャン4.0回（優遇の波）</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">ハイエナ判定</div>
+    <ul class="reasons"><li>現時点では狙い目なし</li></ul>
+  </div>
+  <div class="section">
+    <div class="section-title">📈 波分析（直近5波）</div>
+    <div class="yuri-row">有利区間差枚: <span class="plus">+339枚</span></div>
+    <ul class="reasons wave-list"><li><span class="wave-g">446G</span> <span class="plus">+617枚</span> </li><li><span class="wave-g">244G</span> <span class="">—</span> </li></ul>
+    <div style="font-size:10px;color:#666;margin-top:4px">🐟=鯛焼き　⭐=エンディング</div>
+  </div>
+</div>
+  <a class="reload-btn" href="javascript:location.reload()">🔄 更新</a>
+</div>
+
+<!-- ===== タブ4: 東京喰種 朝イチ判別 ===== -->
+<div class="tab-content" id="tab-ghoul">
+  <div style="padding:8px 4px 4px;font-size:0.8em;color:#aaa;background:#111;border-radius:6px;margin-bottom:12px">⚠️ 朝イチ判別は<b>本日1回目の当選ゲーム数</b>が重要。開店15〜20分で見極め可能。</div><div class="block-title">📍 Aブロック（84〜87番）</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 84</span>
+    <span class="block-tag">ブロックA</span>
+  </div>
+  <div class="diff minus">差枚: -350枚</div>
+  <div class="bonus-info">BONUS 11回 (BIG 8 / REG 3)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#2471a3">🔵 低設定の可能性（天井到達）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:12%;background:#2980b9"></div></div>
+    <div class="score-num">スコア: -1</div>
+    <ul class="reasons"><li>❌ 朝イチ1回目 224G当選（200G天井 — 低設定の可能性が約2倍）</li><li>✅ 超短期当選(8G)あり（直撃/EP候補 — 高設定で約3倍）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 85</span>
+    <span class="block-tag">ブロックA</span>
+  </div>
+  <div class="diff minus">差枚: -1,398枚</div>
+  <div class="bonus-info">BONUS 34回 (BIG 20 / REG 14)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#e74c3c">🔴 設定6有力（朝イチ挙動）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:#e74c3c"></div></div>
+    <div class="score-num">スコア: 4</div>
+    <ul class="reasons"><li>✅ 朝イチ1回目 75G当選（140G以内 — 高設定72% vs 低設定57%）</li><li>✅ 直近3回連続で200G未満当選（天井回避継続）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 86</span>
+    <span class="block-tag">ブロックA</span>
+  </div>
+  <div class="diff minus">差枚: -2,571枚</div>
+  <div class="bonus-info">BONUS 9回 (BIG 3 / REG 6)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#2471a3">🔵 低設定の可能性（天井到達）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:#2980b9"></div></div>
+    <div class="score-num">スコア: -2</div>
+    <ul class="reasons"><li>❌ 朝イチ1回目 223G当選（200G天井 — 低設定の可能性が約2倍）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-a">
+  <div class="card-header">
+    <span class="dai-no">台 87</span>
+    <span class="block-tag">ブロックA</span>
+  </div>
+  <div class="diff plus">差枚: +699枚</div>
+  <div class="bonus-info">BONUS 9回 (BIG 6 / REG 3)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#2471a3">🔵 低設定の可能性（天井到達）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:#2980b9"></div></div>
+    <div class="score-num">スコア: -2</div>
+    <ul class="reasons"><li>❌ 朝イチ1回目 215G当選（200G天井 — 低設定の可能性が約2倍）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div><div class="block-title">📍 Bブロック（96〜99番）</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 96</span>
+    <span class="block-tag">ブロックB</span>
+  </div>
+  <div class="diff minus">差枚: -2,879枚</div>
+  <div class="bonus-info">BONUS 12回 (BIG 5 / REG 7)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#2471a3">🔵 低設定の可能性（天井到達）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:#2980b9"></div></div>
+    <div class="score-num">スコア: -2</div>
+    <ul class="reasons"><li>❌ 朝イチ1回目 237G当選（200G天井 — 低設定の可能性が約2倍）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 97</span>
+    <span class="block-tag">ブロックB</span>
+  </div>
+  <div class="diff minus">差枚: -2,344枚</div>
+  <div class="bonus-info">BONUS 13回 (BIG 7 / REG 6)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#f39c12">🟡 要注目（朝イチ挙動）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:62%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3</div>
+    <ul class="reasons"><li>✅ 朝イチ1回目 135G当選（140G以内 — 高設定72% vs 低設定57%）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 98</span>
+    <span class="block-tag">ブロックB</span>
+  </div>
+  <div class="diff minus">差枚: -10枚</div>
+  <div class="bonus-info">BONUS 61回 (BIG 41 / REG 20)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#f39c12">🟡 要注目（朝イチ挙動）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:62%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3</div>
+    <ul class="reasons"><li>△ 朝イチ1回目 166G当選（190G以内、設定差あり）</li><li>✅ 朝イチ1回目 AT当選（CZ成功 — 高設定57.7% vs 低設定52.6%）</li><li>✅ 超短期当選(13G)あり（直撃/EP候補 — 高設定で約3倍）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+<div class="card block-b">
+  <div class="card-header">
+    <span class="dai-no">台 99</span>
+    <span class="block-tag">ブロックB</span>
+  </div>
+  <div class="diff plus">差枚: +2,067枚</div>
+  <div class="bonus-info">BONUS 20回 (BIG 14 / REG 6)</div>
+  <div class="section">
+    <div class="section-title">🩸 朝イチ判別（初当たりG数）</div>
+    <span class="badge s6" style="background:#f39c12">🟡 要注目（朝イチ挙動）</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:62%;background:#f39c12"></div></div>
+    <div class="score-num">スコア: 3</div>
+    <ul class="reasons"><li>✅ 朝イチ1回目 85G当選（140G以内 — 高設定72% vs 低設定57%）</li></ul>
+  </div>
+  <div class="section" style="font-size:0.75em;color:#888;border-top:1px solid #333;margin-top:8px;padding-top:6px">
+    根拠: すろらぼ実戦値（高設定924台 / 低設定39990台）<br>
+    140G以内当選→高設定72% / 低設定57%　200G天井→低設定26% / 高設定13%
+  </div>
+</div>
+  <a class="reload-btn" href="javascript:location.reload()">🔄 更新</a>
+</div>
+
+</div><!-- /main-content -->
 </body>
 </html>
