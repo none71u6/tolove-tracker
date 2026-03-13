@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-13 11:00",
+  "updated": "2026-03-13 11:30",
   "machines": [
     {
       "dai": 178,
@@ -251,7 +251,7 @@
         "reg": 0,
         "gosei": 134.0
       },
-      "current_diff": 0,
+      "current_diff": -381,
       "setting6": {
         "score": 0,
         "label": "⚪ 低設定の可能性",
