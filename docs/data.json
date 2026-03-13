@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-13 11:30",
+  "updated": "2026-03-13 12:00",
   "machines": [
     {
       "dai": 178,
@@ -244,14 +244,14 @@
     {
       "dai": 188,
       "error": false,
-      "history_count": 0,
+      "history_count": 2,
       "counts": {
-        "bonus": 0,
-        "big": 0,
-        "reg": 0,
-        "gosei": 134.0
+        "bonus": 2,
+        "big": 1,
+        "reg": 1,
+        "gosei": 155.5
       },
-      "current_diff": -381,
+      "current_diff": -443,
       "setting6": {
         "score": 0,
         "label": "⚪ 低設定の可能性",
@@ -260,7 +260,7 @@
       "hyena": {
         "target": false,
         "reasons": [
-          "データなし"
+          "△ 有利区間差枚 -443枚（やや優遇）"
         ]
       },
       "block": "B"
@@ -299,7 +299,7 @@
         "reg": 0,
         "gosei": 229.5
       },
-      "current_diff": 0,
+      "current_diff": -485,
       "setting6": {
         "score": 0,
         "label": "⚪ 低設定の可能性",
